@@ -15,6 +15,7 @@ const headersToObject = (thing) => thing instanceof AxiosHeaders ? thing.toJSON(
  * @returns {Object} New object resulting from merging config2 to config1
  */
 export default function mergeConfig(config1, config2) {
+
   // eslint-disable-next-line no-param-reassign
   config2 = config2 || {};
   const config = {};
@@ -63,6 +64,8 @@ export default function mergeConfig(config1, config2) {
       return getMergedValue(undefined, a);
     }
   }
+  let keys = Object.keys(Object.assign({}, config1, config2))
+  console.log(keys)
 
   const mergeMap = {
     url: valueFromConfig2,
@@ -94,9 +97,10 @@ export default function mergeConfig(config1, config2) {
     validateStatus: mergeDirectKeys,
     headers: (a, b) => mergeDeepProperties(headersToObject(a), headersToObject(b), true)
   };
-
-  utils.forEach(Object.keys(Object.assign({}, config1, config2)), function computeConfigValue(prop) {
+  
+  utils.forEach(keys, function computeConfigValue(prop) {
     const merge = mergeMap[prop] || mergeDeepProperties;
+
     const configValue = merge(config1[prop], config2[prop], prop);
     (utils.isUndefined(configValue) && merge !== mergeDirectKeys) || (config[prop] = configValue);
   });

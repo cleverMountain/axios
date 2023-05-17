@@ -161,7 +161,6 @@ utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
 });
 
 utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  debugger
   defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
 });
 

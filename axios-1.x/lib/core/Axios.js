@@ -20,6 +20,7 @@ const validators = validator.validators;
  */
 class Axios {
   constructor(instanceConfig) {
+    // 实例属性
     this.defaults = instanceConfig;
     this.interceptors = {
       request: new InterceptorManager(),
@@ -35,7 +36,9 @@ class Axios {
    *
    * @returns {Promise} The Promise to be fulfilled
    */
+  // 原型上添加方法request与getUri
   request(configOrUrl, config) {
+ 
     /*eslint no-param-reassign:0*/
     // Allow for axios('example/url'[, config]) a la fetch API
     if (typeof configOrUrl === 'string') {
@@ -145,6 +148,7 @@ class Axios {
     }
 
     try {
+      debugger
       promise = dispatchRequest.call(this, newConfig);
     } catch (error) {
       return Promise.reject(error);
@@ -161,6 +165,7 @@ class Axios {
   }
 
   getUri(config) {
+ 
     config = mergeConfig(this.defaults, config);
     const fullPath = buildFullPath(config.baseURL, config.url);
     return buildURL(fullPath, config.params, config.paramsSerializer);
@@ -183,6 +188,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
   /*eslint func-names:0*/
 
   function generateHTTPMethod(isForm) {
+   
     return function httpMethod(url, data, config) {
       return this.request(mergeConfig(config || {}, {
         method,
@@ -199,5 +205,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
   Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
 });
+console.dir(Axios)
 
 export default Axios;

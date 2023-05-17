@@ -25,18 +25,23 @@ import HttpStatusCode from './helpers/HttpStatusCode.js';
  * @returns {Axios} A new instance of Axios
  */
 function createInstance(defaultConfig) {
-  debugger
+
   const context = new Axios(defaultConfig);
+
   const instance = bind(Axios.prototype.request, context);
 
   // Copy axios.prototype to instance
+  // 把Axios.prototype上的方法添加到instance上
   utils.extend(instance, Axios.prototype, context, {allOwnKeys: true});
 
   // Copy context to instance
+   // 把实例上的属性添加到instance上
   utils.extend(instance, context, null, {allOwnKeys: true});
 
   // Factory for creating new instances
+  // 添加create方法
   instance.create = function create(instanceConfig) {
+    // 合并新的选项
     return createInstance(mergeConfig(defaultConfig, instanceConfig));
   };
 
@@ -45,6 +50,7 @@ function createInstance(defaultConfig) {
 
 // Create the default instance to be exported
 const axios = createInstance(defaults);
+console.dir(axios)
 
 // Expose Axios class to allow class inheritance
 axios.Axios = Axios;
@@ -82,6 +88,6 @@ axios.formToJSON = thing => formDataToJSON(utils.isHTMLForm(thing) ? new FormDat
 axios.HttpStatusCode = HttpStatusCode;
 
 axios.default = axios;
-debugger
+
 // this module should only have a default export
 export default axios
