@@ -46,7 +46,9 @@ function progressEventReducer(listener, isDownloadStream) {
 const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined';
 
 export default isXHRAdapterSupported && function (config) {
+  
   return new Promise(function dispatchXhrRequest(resolve, reject) {
+debugger
     let requestData = config.data;
     const requestHeaders = AxiosHeaders.from(config.headers).normalize();
     const responseType = config.responseType;

@@ -45,9 +45,9 @@ export default function dispatchRequest(config) {
   if (['post', 'put', 'patch'].indexOf(config.method) !== -1) {
     config.headers.setContentType('application/x-www-form-urlencoded', false);
   }
-
+  // 得到适配器方法xhr()或者http()
   const adapter = adapters.getAdapter(config.adapter || defaults.adapter);
-
+debugger
   return adapter(config).then(function onAdapterResolution(response) {
     throwIfCancellationRequested(config);
 

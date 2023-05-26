@@ -31,14 +31,14 @@ class Axios {
   /**
    * Dispatch a request
    *
-   * @param {String|Object} configOrUrl The config specific for this request (merged with this.defaults)
+   * @param {String|ObjectA} configOrUrl The config specific for this request (merged with this.defaults)
    * @param {?Object} config
    *
    * @returns {Promise} The Promise to be fulfilled
    */
   // 原型上添加方法request与getUri
   request(configOrUrl, config) {
- 
+
     /*eslint no-param-reassign:0*/
     // Allow for axios('example/url'[, config]) a la fetch API
     if (typeof configOrUrl === 'string') {
@@ -48,10 +48,12 @@ class Axios {
       config = configOrUrl || {};
     }
 
+    // 合并默认配置与传入的配置
     config = mergeConfig(this.defaults, config);
 
     const {transitional, paramsSerializer, headers} = config;
 
+    // 校验配置transitional
     if (transitional !== undefined) {
       validator.assertOptions(transitional, {
         silentJSONParsing: validators.transitional(validators.boolean),
@@ -59,7 +61,7 @@ class Axios {
         clarifyTimeoutError: validators.transitional(validators.boolean)
       }, false);
     }
-
+    // 校验配置paramsSerializer
     if (paramsSerializer != null) {
       if (utils.isFunction(paramsSerializer)) {
         config.paramsSerializer = {
@@ -73,39 +75,41 @@ class Axios {
       }
     }
 
-    // Set config.method
+    // 设置请求方法，默认get
     config.method = (config.method || this.defaults.method || 'get').toLowerCase();
 
     let contextHeaders;
 
-    // Flatten headers
+    // 合并headers
     contextHeaders = headers && utils.merge(
       headers.common,
       headers[config.method]
     );
-
+    // 删除header上的其他方法
     contextHeaders && utils.forEach(
       ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
       (method) => {
         delete headers[method];
       }
     );
-
+    // headers上只保存了contextHeaders
     config.headers = AxiosHeaders.concat(contextHeaders, headers);
 
     // filter out skipped interceptors
+    // 获取请求拦截器
     const requestInterceptorChain = [];
     let synchronousRequestInterceptors = true;
+    
     this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
       if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
         return;
       }
-
+      // synchronous 是否是异步，默认false
       synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
 
       requestInterceptorChain.unshift(interceptor.fulfilled, interceptor.rejected);
     });
-
+    // 获取响应拦截器
     const responseInterceptorChain = [];
     this.interceptors.response.forEach(function pushResponseInterceptors(interceptor) {
       responseInterceptorChain.push(interceptor.fulfilled, interceptor.rejected);
@@ -114,22 +118,24 @@ class Axios {
     let promise;
     let i = 0;
     let len;
-
+    // 传入拦截器走这里
     if (!synchronousRequestInterceptors) {
       const chain = [dispatchRequest.bind(this), undefined];
+      // 把请求拦截器与相应拦截器添加到chain里
+      // [requestSuccess, requestErr,dispatchRequest.bind(this), undefined,responseSuccess, responseErr]
       chain.unshift.apply(chain, requestInterceptorChain);
       chain.push.apply(chain, responseInterceptorChain);
       len = chain.length;
-
+      // 必定成功的peomise
       promise = Promise.resolve(config);
-
+      // 链条执行promise
       while (i < len) {
         promise = promise.then(chain[i++], chain[i++]);
       }
-
       return promise;
     }
 
+    // 后续不在执行，这里是不传入拦截器走的
     len = requestInterceptorChain.length;
 
     let newConfig = config;
@@ -148,7 +154,7 @@ class Axios {
     }
 
     try {
-      debugger
+      // 执行dispatchRequest
       promise = dispatchRequest.call(this, newConfig);
     } catch (error) {
       return Promise.reject(error);
@@ -158,6 +164,7 @@ class Axios {
     len = responseInterceptorChain.length;
 
     while (i < len) {
+    
       promise = promise.then(responseInterceptorChain[i++], responseInterceptorChain[i++]);
     }
 
@@ -205,6 +212,6 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
   Axios.prototype[method + 'Form'] = generateHTTPMethod(true);
 });
-console.dir(Axios)
+
 
 export default Axios;

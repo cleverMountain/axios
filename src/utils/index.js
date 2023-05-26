@@ -100,4 +100,3 @@ let ccc = {
 extend(aaa, bbb)
 extend(aaa, ccc)
 console.dir(aaa)
-debugger
