@@ -13,13 +13,15 @@
     import axios from "./axios/index.js"
   
 
-    // axios({
-    //   url: 'http://localhost:3000/posts',
-    //   method: 'post',
-    //   padrams: {
-    //     a: 1
-    //   }
-    // })
+    axios({
+      url: 'http://localhost:3000/posts',
+      method: 'post',
+      padrams: {
+        a: 1
+      }
+    }).then(res => {
+      console.log(res)
+    })
     console.log(1)
   </script>
 
