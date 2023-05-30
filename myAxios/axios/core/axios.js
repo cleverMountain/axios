@@ -25,21 +25,15 @@ Axios.prototype.request = function (config) {
   // 必定是成功的回调
   let promise = Promise.resolve(config)
   //  [成功, 失败]
-  let dispatchChain = [dispatchRequest(config), undefined]
+  let dispatchChain = [dispatchRequest, undefined]
   // let a = dispatchRequest(config)
   // console.log(a)
   // 第一个promise一定为真，链式赋值promise，成功返回第一个promise，失败返回第二个
-  // while (dispatchChain.length > 0) {
-  //   promise = promise.then(dispatchChain.shift(), dispatchChain.shift())
+  while (dispatchChain.length > 0) {
+    promise = promise.then(dispatchChain.shift(), dispatchChain.shift())
   
-  // }
-  promise = promise.then(dispatchRequest(config).then(res => {
-    return res
-  }))
-  console.log(promise)
-  promise.then(res => {
-    console.log(res)
-  })
+  }
+  // 
   return promise
 }
 

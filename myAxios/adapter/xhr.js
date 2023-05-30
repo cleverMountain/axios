@@ -1,6 +1,6 @@
 function xhrAdapter(config) {
   const {url, method} = config
-  return new Promise(function dispatchXhrRequest(resolve, reject) {
+  return new Promise((resolve, reject) => {
     // let xhr = new XMLHttpRequest()
     // xhr.onreadystatechange = function () {
     //   if (xhr.readyState === 4) {
@@ -14,7 +14,9 @@ function xhrAdapter(config) {
     const response = {
       data: {a: 1}
     }
-    resolve(response)
+    setTimeout(() => {
+      resolve(response)
+    });
   
   })
 };
