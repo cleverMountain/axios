@@ -9,21 +9,50 @@
 </head>
 
 <body>
+  <button class="send">发送请求</button>
+  <button class="cancel">取消发送</button>
   <script type="module">
-    import axios from "./axios/index.js"
-  
+    import axios from "./index.js"
+    const sendQ = document.querySelector('.send')
+    const cancelQ = document.querySelector('.cencel')
 
-    axios({
-      url: 'http://localhost:3000/posts',
-      method: 'post',
-      padrams: {
-        a: 1
-      }
-    }).then(res => {
-    
-      console.log(res)
-    })
-    console.log(1)
+    sendQ.addEventListener('click', sendQuery, false)
+
+    axios.interceptors.request.use(function (config) {
+      // Do something before request is sent
+      return config;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    });
+    axios.interceptors.response.use(function (config) {
+
+      // Do something before request is sent
+      return config.data;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    });
+
+    const CancelToken = axios.CancelToken;
+    let cancel;
+
+    function sendQuery() {
+      if (cancel) cancel()
+      axios({
+        url: 'http://localhost:3000/posts',
+        method: 'post',
+        params: {
+          a: 1
+        },
+        cancelToken: new CancelToken(function executor(c) {
+          cancel = c;
+        })
+      }).then(res => {
+
+        console.log(res)
+      })
+    }
   </script>
 
 </body>

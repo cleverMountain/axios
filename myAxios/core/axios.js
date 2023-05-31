@@ -1,13 +1,13 @@
 
 import dispatchRequest from "./dispatchRequest.js"
-
+import InterceptorManager from "./interceptorManager.js"
 function Axios(instanceConfig) {
   //实例对象上的 defaults 属性为配置对象
   this.defaults = instanceConfig;
   //实例对象上有 interceptors 属性用来设置请求和响应拦截器
   this.interceptors = {
-    request: {},
-    response: {}
+    request: new InterceptorManager(),
+    response: new InterceptorManager()
   };
 
 
@@ -24,16 +24,25 @@ Axios.prototype.request = function (config) {
   }
   // 必定是成功的回调
   let promise = Promise.resolve(config)
+  console.log(this)
+
   //  [成功, 失败]
-  let dispatchChain = [dispatchRequest, undefined]
-  // let a = dispatchRequest(config)
-  // console.log(a)
-  // 第一个promise一定为真，链式赋值promise，成功返回第一个promise，失败返回第二个
+  let dispatchChain = [dispatchRequest.bind(this), undefined]
+  // 请求拦截
+  this.interceptors.request.handlers.forEach(interceptor => {
+    dispatchChain.unshift(interceptor.fulfilled, interceptor.rejected)
+  })
+  // 响应拦截
+  this.interceptors.response.handlers.forEach(interceptor => {
+    dispatchChain.push(interceptor.fulfilled, interceptor.rejected)
+  })
+  console.log(dispatchChain)
+  // // 第一个promise一定为真，链式赋值promise，成功返回第一个promise，失败返回第二个
   while (dispatchChain.length > 0) {
     promise = promise.then(dispatchChain.shift(), dispatchChain.shift())
-  
+
   }
-  // 
+  
   return promise
 }
 
