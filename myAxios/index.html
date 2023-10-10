@@ -6,24 +6,45 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.5.0/axios.js"></script> -->
 </head>
+<button id="send">发送</button>
+<button id="cancal">取消</button>
 
 <body>
   <script type="module">
     import axios from "./axios/index.js"
-  
+   
 
-    axios({
-      url: 'http://localhost:3000/posts',
-      method: 'post',
-      padrams: {
-        a: 1
-      }
-    }).then(res => {
-    
-      console.log(res)
+    let send = document.getElementById('send')
+    let cancel = document.getElementById('cancal')
+    const CancelToken = axios.CancelToken;
+    let cancel1;
+    send.addEventListener('click', () => {
+      axios({
+        url: 'http://127.0.0.1:8089/user',
+        method: 'get',
+        padrams: {
+          a: 1,
+
+        },
+        cancelToken: new CancelToken(function executor(c) {
+          // executor 函数接收一个 cancel 函数作为参数
+          cancel1 = c;
+        })
+      }).then(res => {
+
+        console.log(res)
+      })
     })
-    console.log(1)
+
+    cancel.addEventListener('click', () => {
+
+      cancel1()
+    })
+
+
+
   </script>
 
 </body>
