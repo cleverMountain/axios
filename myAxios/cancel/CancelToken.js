@@ -25,6 +25,7 @@ class CancelToken {
      * cancel = c -> cancel()  -> resolvePromise() -> this.promise.then执行
      */
     executor(function cancel() {
+ 
       resolvePromise()
     })
   }

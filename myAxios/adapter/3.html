@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cancelable AJAX Request</title>
+</head>
+<body>
+  <button id="startRequest">Start Request</button>
+  <button id="cancelRequest" >Cancel Request</button>
+  <div id="result"></div>
+
+  <script>
+    // Define a CancelToken class to keep track of cancellation
+    class CancelToken {
+      constructor() {
+        this.canceled = false;
+      }
+    }
+
+    function makeCancelableAjaxRequest(url) {
+      // let xhr;
+      let cancelToken = new CancelToken();
+
+      const promise = new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+// debugger
+        xhr.open('GET', url, true);
+
+        xhr.onreadystatechange = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error(`Request failed with status ${xhr.status}`));
+          }
+        };
+
+        xhr.onerror = function () {
+          reject(new Error('Request failed'));
+        };
+        xhr.abort();
+        xhr.send();
+      });
+      // xhr.abort();
+      // Add a cancel method to the promise
+      promise.cancel = () => {
+        cancelToken.canceled = true;
+        xhr.abort();
+      };
+
+      return promise;
+    }
+
+    document.getElementById('startRequest').addEventListener('click', () => {
+      document.getElementById('result').textContent = 'Loading...';
+
+      const cancelableRequest = makeCancelableAjaxRequest('https://jsonplaceholder.typicode.com/todos/1');
+
+      document.getElementById('cancelRequest').addEventListener('click', () => {
+        cancelableRequest.cancel();
+        document.getElementById('result').textContent = 'Request canceled';
+      });
+
+      cancelableRequest
+        .then((data) => {
+          document.getElementById('result').textContent = `Request successful: ${data}`;
+        })
+        .catch((error) => {
+          if (error instanceof Error && !cancelableRequest.cancelToken.canceled) {
+            document.getElementById('result').textContent = `Request failed: ${error.message}`;
+          } else {
+            document.getElementById('result').textContent = 'Request canceled';
+          }
+        });
+    });
+  </script>
+</body>
+</html>

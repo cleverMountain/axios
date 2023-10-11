@@ -12,15 +12,15 @@
 <button id="cancal">取消</button>
 
 <body>
-  <button class="send">发送请求</button>
-  <button class="cancel">取消发送</button>
+ 
   <script type="module">
-    import axios from "./axios/index.js"
+    import axios from "./index.js"
    
 
     let send = document.getElementById('send')
     let cancel = document.getElementById('cancal')
     const CancelToken = axios.CancelToken;
+    
     let cancel1;
     send.addEventListener('click', () => {
       axios({
@@ -30,19 +30,24 @@
           a: 1,
 
         },
-        cancelToken: new CancelToken(function executor(c) {
-          // executor 函数接收一个 cancel 函数作为参数
-          cancel1 = c;
-        })
+        // cancelToken: new CancelToken((c) => {
+        //   // executor 函数接收一个 cancel 函数作为参数
+        //   cancel1 = c;
+          
+        // })
       }).then(res => {
 
         console.log(res)
       })
+      // setTimeout(() => {
+      //   console.log(2)
+      // }, 2000)
     })
 
     cancel.addEventListener('click', () => {
 
-      cancel1()
+      // cancel1()
+      console.log(1)
     })
 
 
